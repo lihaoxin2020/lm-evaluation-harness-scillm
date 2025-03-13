@@ -536,8 +536,16 @@ def evaluate(
         resps = getattr(lm, reqtype)(cloned_reqs)
 
         # put responses from model into a list of length K for each request.
+        if len(resps) > len(cloned_reqs):
+            n = len(resps) // len(cloned_reqs)
+            temp_cloned_reqs = []
+            for req in cloned_reqs:
+                temp_cloned_reqs.extend([req] * n)
+            cloned_reqs = temp_cloned_reqs
         for x, req in zip(resps, cloned_reqs):
             req.resps.append(x)
+        # from IPython import embed
+        # embed()
 
         if lm.world_size > 1:
             lm.accelerator.wait_for_everyone()

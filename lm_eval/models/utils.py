@@ -534,8 +534,11 @@ class Collator:
             cov[ind] = True
 
         assert all(cov)
-
-        return res
+        reordered_res = []
+        for i in res:
+            reordered_res.extend(i)
+        # return res
+        return reordered_res
 
     def __len__(self):
         return self._size

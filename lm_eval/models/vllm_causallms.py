@@ -426,14 +426,19 @@ class VLLM(TemplateLM):
 
             # cache generations
             for output, context in zip(cont, context):
-                generated_text = output.outputs[0].text
-                res.append(generated_text)
-                self.cache_hook.add_partial(
-                    "generate_until", (context, gen_kwargs), generated_text
-                )
+                instance_res = []
+                for j in range(len(output.outputs)):
+                    generated_text = output.outputs[j].text
+                    instance_res.append(generated_text)
+                    self.cache_hook.add_partial(
+                        "generate_until", (context, gen_kwargs), generated_text
+                    )
+                res.append(instance_res)
                 pbar.update(1)
 
         pbar.close()
+        # from IPython import embed
+        # embed()
         # reorder all group of results back to original unsorted form
         return re_ords.get_original(res)
 
